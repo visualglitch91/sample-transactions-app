@@ -31,7 +31,7 @@ describe('TextInput', () => {
             id: 3,
             description: 'Salary',
             amount: 500000,
-            type: 'crebit',
+            type: 'credit',
             date: '2019-09-21'
           }
         ]
@@ -53,9 +53,9 @@ describe('TextInput', () => {
       dayGroups[groupIndex].querySelectorAll('.MuiListItem-root')[index].textContent
 
     expect(getSubheader(0)).toBe('22/09/2019')
-    expect(getItem(0, 0)).toBe('Boteco do Góis- 30.00')
+    expect(getItem(0, 0)).toBe('Boteco do Góis-30.00')
     expect(getSubheader(1)).toBe('21/09/2019')
-    expect(getItem(1, 0)).toBe('Prime Dog- 30.00')
+    expect(getItem(1, 0)).toBe('Prime Dog-30.00')
     expect(getItem(1, 1)).toBe('Salary5000.00')
   })
 
