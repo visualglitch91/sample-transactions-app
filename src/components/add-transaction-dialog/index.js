@@ -46,6 +46,7 @@ function AddTransactionDialog({ onClose }) {
 
   return (
     <Dialog
+      id="add-transaction-dialog"
       fullScreen={fullScreen}
       onClose={onClose}
       aria-labelledby="add-transaction-dialog__dialog-title"

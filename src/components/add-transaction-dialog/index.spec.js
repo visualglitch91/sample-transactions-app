@@ -15,7 +15,12 @@ describe('AddTransactionDialog', () => {
   })
 
   it('validates the description field', async () => {
-    const { container } = render(<AddTransactionDialog />)
+    const { container } = render(
+      <StoreProvider>
+        <AddTransactionDialog />
+      </StoreProvider>
+    )
+
     const input = container.querySelector('[name="description"]')
     const inputWrapper = input.parentNode.parentNode
 
@@ -37,7 +42,12 @@ describe('AddTransactionDialog', () => {
   })
 
   it('validates the amount field', async () => {
-    const { container } = render(<AddTransactionDialog />)
+    const { container } = render(
+      <StoreProvider>
+        <AddTransactionDialog />
+      </StoreProvider>
+    )
+
     const input = container.querySelector('[name="amount"]')
     const inputWrapper = input.parentNode.parentNode
 
@@ -63,7 +73,12 @@ describe('AddTransactionDialog', () => {
   })
 
   it('validates the date field', async () => {
-    const { container } = render(<AddTransactionDialog />)
+    const { container } = render(
+      <StoreProvider>
+        <AddTransactionDialog />
+      </StoreProvider>
+    )
+
     const input = container.querySelector('[name="date"]')
     const inputWrapper = input.parentNode.parentNode
 
@@ -90,7 +105,12 @@ describe('AddTransactionDialog', () => {
 
   it('can be closed', () => {
     const onClose = jest.fn()
-    const { container } = render(<AddTransactionDialog onClose={onClose} />)
+    const { container } = render(
+      <StoreProvider>
+        <AddTransactionDialog onClose={onClose} />
+      </StoreProvider>
+    )
+
     const button = container.querySelector('#add-transaction-dialog__close')
 
     fireEvent.click(button)
