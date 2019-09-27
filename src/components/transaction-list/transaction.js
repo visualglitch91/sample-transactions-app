@@ -19,7 +19,7 @@ function Transaction({ id, description, date, amount, type }) {
     <ListItem id={`transaction__${id}`}>
       <ListItemText
         primary={description}
-        secondary={currency(amount, { negative: type === 'debit' })}
+        secondary={currency(type === 'credit' ? amount : -amount)}
         secondaryTypographyProps={{ style: { color: type === 'debit' ? 'red' : 'green' } }}
       />
 
