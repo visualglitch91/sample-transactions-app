@@ -16,13 +16,14 @@ function getInitialState() {
   return initialState
 }
 
-export function StoreProvider({ children }) {
+export function StoreProvider({ children, onChange = () => {} }) {
   const [store, _dispatch] = useReducer(reducer, getInitialState())
   const dispatch = useCallback((type, payload) => _dispatch([type, payload]), [])
 
   useEffect(() => {
+    onChange(store)
     window.localStorage.setItem('store', JSON.stringify(store))
-  }, [store])
+  }, [store, onChange])
 
   return (
     <dispatchContext.Provider value={dispatch}>
