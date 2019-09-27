@@ -7,7 +7,7 @@ import { useStore } from '../../store'
 import useCurrency from '../../hooks/use-currency'
 import styles from './index.module.css'
 
-function Footer({ onAdd }) {
+function Footer({ onAddTransaction, onChangeCurrency }) {
   const currency = useCurrency()
   const { transactions } = useStore()
   const balance = transactions.reduce(
@@ -16,14 +16,23 @@ function Footer({ onAdd }) {
   )
 
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" color="primary" id="footer">
       <Toolbar>
         <p id="footer__balance" className={styles.balance}>{`Saldo: ${currency(balance)}`}</p>
+        <IconButton
+          id="footer__change-currency"
+          size="small"
+          color="inherit"
+          onClick={onChangeCurrency}
+          aria-label="alterar moeda"
+        >
+          <Icon>attach_money</Icon>
+        </IconButton>
         <IconButton
           id="footer__add-transaction"
           size="small"
           color="inherit"
-          onClick={onAdd}
+          onClick={onAddTransaction}
           aria-label="adicionar transação"
         >
           <Icon>add</Icon>

@@ -1,23 +1,26 @@
 import React from 'react'
 import { Formik } from 'formik'
 import { render, fireEvent, act } from '@testing-library/react'
+import { StoreProvider } from '../../store'
 import MoneyInput from './index'
 
 function build(props) {
   let _values
 
   const utils = render(
-    <Formik
-      initialValues={{ some_field: 0 }}
-      render={({ values }) => {
-        _values = values
-        return (
-          <form>
-            <MoneyInput name="some_field" label="Some Field" type="text" {...props} />
-          </form>
-        )
-      }}
-    />
+    <StoreProvider>
+      <Formik
+        initialValues={{ some_field: 0 }}
+        render={({ values }) => {
+          _values = values
+          return (
+            <form>
+              <MoneyInput name="some_field" label="Some Field" type="text" {...props} />
+            </form>
+          )
+        }}
+      />
+    </StoreProvider>
   )
 
   return {
@@ -29,6 +32,14 @@ function build(props) {
 }
 
 describe('Field', () => {
+  beforeAll(() => {
+    window.localStorage.setItem('store', JSON.stringify({ currency: 'BRL' }))
+  })
+
+  afterAll(() => {
+    window.localStorage.removeItem('store')
+  })
+
   it('renders the label with the right props', () => {
     const { container } = build()
     const label = container.querySelector('label')

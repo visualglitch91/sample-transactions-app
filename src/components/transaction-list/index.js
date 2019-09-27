@@ -34,7 +34,7 @@ function TransactionList() {
   }, {})
 
   return (
-    <>
+    <div id="transaction-list">
       <Typography variant="h5" gutterBottom className={styles.title}>
         Transações
       </Typography>
@@ -43,7 +43,7 @@ function TransactionList() {
           <TransactionsOfTheDay key={date} date={date} transactions={transactionsByDay[date]} />
         ))}
       </List>
-    </>
+    </div>
   )
 }
 
