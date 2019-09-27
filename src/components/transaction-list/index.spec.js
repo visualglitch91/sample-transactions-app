@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, act, fireEvent } from '@testing-library/react'
 import { StoreProvider } from '../../store'
 import TransactionList from './index'
 
@@ -57,5 +57,36 @@ describe('TextInput', () => {
     expect(getSubheader(1)).toBe('21/09/2019')
     expect(getItem(1, 0)).toBe('Prime Dog- 30.00')
     expect(getItem(1, 1)).toBe('Salary5000.00')
+  })
+
+  it('can remove a transaction', () => {
+    window.localStorage.setItem(
+      'store',
+      JSON.stringify({
+        transactions: [
+          {
+            id: 1,
+            description: 'Prime Dog',
+            amount: 3000,
+            type: 'debit',
+            date: '2019-09-21'
+          }
+        ]
+      })
+    )
+
+    const { container } = render(
+      <StoreProvider>
+        <TransactionList />
+      </StoreProvider>
+    )
+
+    expect(container.querySelector('#transaction__1')).not.toBeNull()
+
+    act(() => {
+      fireEvent.click(container.querySelector('#transaction__1__remove'))
+    })
+
+    expect(container.querySelector('#transaction__1')).toBeNull()
   })
 })
