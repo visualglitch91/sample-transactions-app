@@ -1,7 +1,12 @@
+import currencyFormatter from 'currency-formatter'
+
 function useCurrency() {
-  // this will be improved later, respecting the selected currency
-  return function currency(amount) {
-    return (amount / 100).toFixed(2)
+  return function format(amount) {
+    return currencyFormatter
+      .format(amount / 100, {
+        code: 'BRL'
+      })
+      .replace(/\u00a0/g, ' ') // Replace non-breaking space with a regular space
   }
 }
 

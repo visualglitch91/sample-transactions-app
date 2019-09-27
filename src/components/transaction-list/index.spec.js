@@ -53,10 +53,10 @@ describe('TextInput', () => {
       dayGroups[groupIndex].querySelectorAll('.MuiListItem-root')[index].textContent
 
     expect(getSubheader(0)).toBe('22/09/2019')
-    expect(getItem(0, 0)).toBe('Boteco do Góis-30.00')
+    expect(getItem(0, 0)).toBe('Boteco do Góis-R$ 30,00')
     expect(getSubheader(1)).toBe('21/09/2019')
-    expect(getItem(1, 0)).toBe('Prime Dog-30.00')
-    expect(getItem(1, 1)).toBe('Salary5000.00')
+    expect(getItem(1, 0)).toBe('Prime Dog-R$ 30,00')
+    expect(getItem(1, 1)).toBe('SalaryR$ 5.000,00')
   })
 
   it('can remove a transaction', () => {
