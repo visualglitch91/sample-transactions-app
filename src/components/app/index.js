@@ -2,14 +2,19 @@ import React, { useState } from 'react'
 import Paper from '@material-ui/core/Paper'
 import Footer from '../footer'
 import AddTransactionDialog from '../add-transaction-dialog'
+import ChangeCurrencyDialog from '../change-currency-dialog'
 import TransactionList from '../transaction-list'
 import styles from './index.module.css'
 
 function App() {
-  const [showDialog, setShowDialog] = useState(false)
+  const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false)
+  const [showChangeCurrencyDialog, setShowChangeCurrencyDialog] = useState(false)
 
-  function toggleDialog() {
-    setShowDialog(flag => !flag)
+  function toggleAddTransactionDialog() {
+    setShowAddTransactionDialog(flag => !flag)
+  }
+  function toggleChangeCurrencyDialog() {
+    setShowChangeCurrencyDialog(flag => !flag)
   }
 
   return (
@@ -19,8 +24,12 @@ function App() {
           <TransactionList />
         </div>
       </div>
-      <Footer onAdd={toggleDialog} />
-      {showDialog && <AddTransactionDialog onClose={toggleDialog} />}
+      <Footer
+        onAddTransaction={toggleAddTransactionDialog}
+        onChangeCurrency={toggleChangeCurrencyDialog}
+      />
+      {showAddTransactionDialog && <AddTransactionDialog onClose={toggleAddTransactionDialog} />}
+      {showChangeCurrencyDialog && <ChangeCurrencyDialog onClose={toggleChangeCurrencyDialog} />}
     </Paper>
   )
 }

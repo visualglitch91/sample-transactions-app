@@ -12,6 +12,7 @@ describe('TextInput', () => {
     window.localStorage.setItem(
       'store',
       JSON.stringify({
+        currency: 'BRL',
         transactions: [
           {
             id: 1,
@@ -53,9 +54,9 @@ describe('TextInput', () => {
       dayGroups[groupIndex].querySelectorAll('.MuiListItem-root')[index].textContent
 
     expect(getSubheader(0)).toBe('22/09/2019')
-    expect(getItem(0, 0)).toBe('Boteco do Góis-R$ 30,00')
+    expect(getItem(0, 0)).toBe('Boteco do GóisR$ -30,00')
     expect(getSubheader(1)).toBe('21/09/2019')
-    expect(getItem(1, 0)).toBe('Prime Dog-R$ 30,00')
+    expect(getItem(1, 0)).toBe('Prime DogR$ -30,00')
     expect(getItem(1, 1)).toBe('SalaryR$ 5.000,00')
   })
 
@@ -63,6 +64,7 @@ describe('TextInput', () => {
     window.localStorage.setItem(
       'store',
       JSON.stringify({
+        currency: 'BRL',
         transactions: [
           {
             id: 1,
