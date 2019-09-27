@@ -39,11 +39,11 @@ describe('Field', () => {
     const { container, getFormikValues } = build()
     const input = container.querySelector('input')
 
-    expect(input.value).toBe('0.00')
+    expect(input.value).toBe('R$ 0,00')
 
-    fireEvent.change(input, { target: { value: '10.00' } })
+    fireEvent.change(input, { target: { value: 'R$ 10,00' } })
 
-    expect(input.value).toBe('10.00')
+    expect(input.value).toBe('R$ 10,00')
     expect(getFormikValues().some_field).toBe(1000)
   })
 
@@ -55,10 +55,10 @@ describe('Field', () => {
     const input = container.querySelector('input')
 
     expect(container.querySelector('.MuiFormHelperText-root')).toBeNull()
-    expect(input.value).toBe('0.00')
+    expect(input.value).toBe('R$ 0,00')
 
     act(() => {
-      fireEvent.change(input, { target: { value: '10.00' } })
+      fireEvent.change(input, { target: { value: 'R$ 10,00' } })
     })
 
     act(() => {
@@ -67,7 +67,7 @@ describe('Field', () => {
 
     setImmediate(() => {
       expect(container.querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
-      expect(input.value).toBe('10.00')
+      expect(input.value).toBe('R$ 10,00')
       done()
     })
   })

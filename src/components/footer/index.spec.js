@@ -58,6 +58,6 @@ describe('Footer', () => {
       </StoreProvider>
     )
 
-    expect(container.querySelector('#footer__balance').textContent).toBe('Saldo: 4940.00')
+    expect(container.querySelector('#footer__balance').textContent).toBe('Saldo: R$ 4.940,00')
   })
 })
