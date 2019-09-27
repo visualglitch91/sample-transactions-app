@@ -1,0 +1,10 @@
+.transactionsOfTheDay {
+  margin: 0;
+  padding: 0;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.subheader {
+  margin-bottom: -16px;
+}
