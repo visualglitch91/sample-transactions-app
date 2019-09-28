@@ -29,6 +29,7 @@ describe('Footer', () => {
 
   it('renders the balance', () => {
     const { findById } = renderWithStore(<Footer />, {
+      nextId: 4,
       currency: 'BRL',
       transactions: [
         {
