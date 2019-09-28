@@ -3,6 +3,7 @@ import { useStore } from '../../store'
 import List from '@material-ui/core/List'
 import Typography from '@material-ui/core/Typography'
 import TransactionsOfTheDay from './transactions-of-the-day'
+import EmptyState from './empty-state'
 import styles from './index.module.css'
 
 function compareTransactionsByDate(a, b) {
@@ -26,7 +27,7 @@ function sortTransactionsByDate(transactions) {
   return temp
 }
 
-function TransactionList() {
+function TransactionList({ onAddTransaction }) {
   const { transactions } = useStore()
   const transactionsByDay = sortTransactionsByDate(transactions).reduce((days, transaction) => {
     days[transaction.date] = [...(days[transaction.date] || []), transaction]
@@ -38,11 +39,15 @@ function TransactionList() {
       <Typography variant="h5" gutterBottom className={styles.title}>
         Transações
       </Typography>
-      <List id="transaction-list__list">
-        {Object.keys(transactionsByDay).map(date => (
-          <TransactionsOfTheDay key={date} date={date} transactions={transactionsByDay[date]} />
-        ))}
-      </List>
+      {transactions.length === 0 ? (
+        <EmptyState onAddTransaction={onAddTransaction} />
+      ) : (
+        <List id="transaction-list__list">
+          {Object.keys(transactionsByDay).map(date => (
+            <TransactionsOfTheDay key={date} date={date} transactions={transactionsByDay[date]} />
+          ))}
+        </List>
+      )}
     </div>
   )
 }

@@ -7,6 +7,19 @@ describe('TextInput', () => {
     window.localStorage.removeItem('store')
   })
 
+  it('show the empty state component when there are no transactions with a button to add one', () => {
+    const onAddTransaction = jest.fn()
+    const { container, findById } = renderWithStore(
+      <TransactionList onAddTransaction={onAddTransaction} />
+    )
+
+    expect(findById('transaction-list__empty-state')).not.toBeNull()
+
+    fireEvent.click(findById('transaction-list__empty-state__add-transaction'))
+
+    expect(onAddTransaction).toHaveBeenCalledTimes(1)
+  })
+
   it('renders the transactions sorted by date and grouped by day', () => {
     const { querySelectorAll } = renderWithStore(<TransactionList />, {
       currency: 'BRL',
