@@ -3,29 +3,17 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import Icon from '@material-ui/core/Icon'
-import { makeStyles } from '@material-ui/core/styles'
-import { useStore } from '../../store'
-import useCurrency from '../../hooks/use-currency'
+import { styled } from '@material-ui/core/styles'
+import Balance from './balance'
 
-const useStyles = makeStyles(theme => ({
-  balance: {
-    marginRight: 'auto'
-  }
-}))
+const Grow = styled('div')({ flexGrow: 1 })
 
 function Footer({ onAddTransaction, onChangeCurrency }) {
-  const classes = useStyles()
-  const currency = useCurrency()
-  const { transactions } = useStore()
-  const balance = transactions.reduce(
-    (balance, { amount, type }) => (type === 'credit' ? balance + amount : balance - amount),
-    0
-  )
-
   return (
     <AppBar position="static" color="primary" id="footer">
       <Toolbar>
-        <p id="footer__balance" className={classes.balance}>{`Saldo: ${currency(balance)}`}</p>
+        <Balance />
+        <Grow />
         <IconButton
           id="footer__change-currency"
           size="small"
