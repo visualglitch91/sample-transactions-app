@@ -3,17 +3,17 @@ import Icon from '@material-ui/core/Icon'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import grey from '@material-ui/core/colors/grey'
-
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
+    flexGrow: 1,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'column',
     textAlign: 'center',
-    padding: theme.spacing(2),
-    margintop: theme.spacing(3)
+    padding: theme.spacing(2)
   },
   icon: {
     fontSize: 60,

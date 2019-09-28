@@ -1,10 +1,21 @@
 import React from 'react'
-import { useStore } from '../../store'
 import List from '@material-ui/core/List'
 import Typography from '@material-ui/core/Typography'
+import { makeStyles } from '@material-ui/core/styles'
+import { useStore } from '../../store'
 import TransactionsOfTheDay from './transactions-of-the-day'
 import EmptyState from './empty-state'
-import styles from './index.module.css'
+
+const useStyles = makeStyles(theme => ({
+  wrapper: {
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  title: {
+    padding: theme.spacing(3, 2, 0)
+  }
+}))
 
 function compareTransactionsByDate(a, b) {
   const dateA = new Date(a.date)
@@ -28,6 +39,7 @@ function sortTransactionsByDate(transactions) {
 }
 
 function TransactionList({ onAddTransaction }) {
+  const classes = useStyles()
   const { transactions } = useStore()
   const transactionsByDay = sortTransactionsByDate(transactions).reduce((days, transaction) => {
     days[transaction.date] = [...(days[transaction.date] || []), transaction]
@@ -35,8 +47,8 @@ function TransactionList({ onAddTransaction }) {
   }, {})
 
   return (
-    <div id="transaction-list">
-      <Typography variant="h5" gutterBottom className={styles.title}>
+    <div id="transaction-list" className={classes.wrapper}>
+      <Typography variant="h5" gutterBottom className={classes.title}>
         Transações
       </Typography>
       {transactions.length === 0 ? (
