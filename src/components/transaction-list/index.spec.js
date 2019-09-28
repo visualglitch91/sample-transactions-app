@@ -9,9 +9,7 @@ describe('TextInput', () => {
 
   it('show the empty state component when there are no transactions with a button to add one', () => {
     const onAddTransaction = jest.fn()
-    const { container, findById } = renderWithStore(
-      <TransactionList onAddTransaction={onAddTransaction} />
-    )
+    const { findById } = renderWithStore(<TransactionList onAddTransaction={onAddTransaction} />)
 
     expect(findById('transaction-list__empty-state')).not.toBeNull()
 
