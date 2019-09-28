@@ -53,7 +53,3 @@ I like to follow the approach described in this article https://kentcdodds.com/b
 ## Deployment
 
 This repository is automatically deployed to Netlify, every new commit to the master branch will trigger the tests, build the app and upload it to netlify's CDN. You can check the app running here https://sweet-kangaroo-79.netlify.com
-
-## Local Storage
-
-The app is storing its data on the browser's local storage, in the real world we would have a backend handling this, storing and validating all the data. Since this is just a sample project, the data stored is not being validated when loaded, that means that the app will break if you tamper the data manually. If that happens, just clear the local storage and refresh the page.
