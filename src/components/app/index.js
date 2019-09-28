@@ -21,7 +21,7 @@ function App() {
     <Paper className={styles.wrapper}>
       <div className={styles.content}>
         <div className={styles.innerContent}>
-          <TransactionList />
+          <TransactionList onAddTransaction={toggleAddTransactionDialog} />
         </div>
       </div>
       <Footer
