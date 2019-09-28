@@ -1,49 +1,29 @@
 import React from 'react'
-import { Formik } from 'formik'
-import { render, fireEvent, act } from '@testing-library/react'
+import { renderWithFormik, immediate, fireEvent, act } from '../../test-utils'
 import TextInput from './index'
 
 function build(props) {
-  let _values
-
-  const utils = render(
-    <Formik
-      initialValues={{ some_field: 'some value' }}
-      render={({ values }) => {
-        _values = values
-        return (
-          <form>
-            <TextInput name="some_field" label="Some Field" {...props} />
-          </form>
-        )
-      }}
-    />
-  )
-
-  return {
-    ...utils,
-    getFormikValues() {
-      return _values
-    }
-  }
+  return renderWithFormik(<TextInput name="some_field" label="Some Field" {...props} />, {
+    some_field: 'some value'
+  })
 }
 
 describe('TextInput', () => {
   it('renders the label with the right props', () => {
-    const { container } = build()
-    const label = container.querySelector('label')
+    const { querySelector } = build()
+    const label = querySelector('label')
     expect(label.textContent).toBe('Some Field')
   })
 
   it('can render a date type input', () => {
-    const { container } = build({ type: 'date' })
-    const input = container.querySelector('input')
+    const { querySelector } = build({ type: 'date' })
+    const input = querySelector('input')
     expect(input.getAttribute('type')).toBe('date')
   })
 
   it('is connected to formik', () => {
-    const { container, getFormikValues } = build()
-    const input = container.querySelector('input')
+    const { querySelector, getFormikValues } = build()
+    const input = querySelector('input')
 
     expect(input.value).toBe('some value')
 
@@ -53,28 +33,23 @@ describe('TextInput', () => {
     expect(getFormikValues().some_field).toBe('some other value')
   })
 
-  it('renders the validation error when needed', done => {
-    const { container } = build({
+  it('renders the validation error when needed', async () => {
+    const { querySelector } = build({
       validate: value => (value.length < 3 ? 'error message' : undefined)
     })
 
-    const input = container.querySelector('input')
+    const input = querySelector('input')
 
-    expect(container.querySelector('.MuiFormHelperText-root')).toBeNull()
+    expect(querySelector('.MuiFormHelperText-root')).toBeNull()
     expect(input.value).toBe('some value')
 
-    act(() => {
-      fireEvent.change(input, { target: { value: 'so' } })
-    })
+    await act(
+      () => fireEvent.change(input, { target: { value: 'so' } }),
+      () => fireEvent.blur(input),
+      () => immediate()
+    )
 
-    act(() => {
-      fireEvent.blur(input)
-    })
-
-    setImmediate(() => {
-      expect(container.querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
-      expect(input.value).toBe('so')
-      done()
-    })
+    expect(querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
+    expect(input.value).toBe('so')
   })
 })

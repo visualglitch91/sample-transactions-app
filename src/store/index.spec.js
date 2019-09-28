@@ -1,31 +1,7 @@
-import React from 'react'
-import { render, act } from '@testing-library/react'
-import { StoreProvider, useStore, useDispatch } from './index'
+import { renderWithStore } from '../test-utils'
 
 function build() {
-  let _store
-  let _dispatch
-
-  function TestComponent() {
-    _store = useStore()
-    _dispatch = useDispatch()
-    return null
-  }
-
-  render(
-    <StoreProvider>
-      <TestComponent />
-    </StoreProvider>
-  )
-
-  return {
-    dispatch(...args) {
-      act(() => _dispatch(...args))
-    },
-    get current() {
-      return _store
-    }
-  }
+  return renderWithStore(null)
 }
 
 describe('Store', () => {
@@ -34,8 +10,8 @@ describe('Store', () => {
   })
 
   it('initializes with the correct initial state', () => {
-    const store = build()
-    expect(store.current).toEqual({
+    const { getStore } = build()
+    expect(getStore()).toEqual({
       currency: 'BRL',
       nextId: 1,
       transactions: []
@@ -43,21 +19,21 @@ describe('Store', () => {
   })
 
   it('can add transactions', () => {
-    const store = build()
+    const { getStore, dispatch } = build()
 
-    store.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 1',
       amount: 10000,
       date: '2019-09-27'
     })
 
-    store.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 2',
       amount: -5000,
       date: '2019-09-27'
     })
 
-    expect(store.current.transactions).toEqual([
+    expect(getStore().transactions).toEqual([
       {
         id: 1,
         description: 'Transaction 1',
@@ -74,29 +50,29 @@ describe('Store', () => {
   })
 
   it('can remove transactions', () => {
-    const store = build()
+    const { getStore, dispatch } = build()
 
-    store.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 1',
       amount: 10000,
       date: '2019-09-27'
     })
 
-    store.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 2',
       amount: -5000,
       date: '2019-09-27'
     })
 
-    store.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 3',
       amount: 2000,
       date: '2019-09-27'
     })
 
-    store.dispatch('REMOVE', 2)
+    dispatch('REMOVE', 2)
 
-    expect(store.current.transactions).toEqual([
+    expect(getStore().transactions).toEqual([
       {
         id: 1,
         description: 'Transaction 1',
@@ -113,23 +89,25 @@ describe('Store', () => {
   })
 
   it('can change the currency', () => {
-    const store = build()
-    store.dispatch('CHANGE_CURRENCY', 'EUR')
-    expect(store.current.currency).toBe('EUR')
+    const { getStore, dispatch } = build()
+
+    dispatch('CHANGE_CURRENCY', 'EUR')
+
+    expect(getStore().currency).toBe('EUR')
   })
 
   it('persists data on local storage', () => {
-    const store1 = build()
+    const { dispatch } = build()
 
-    store1.dispatch('ADD', {
+    dispatch('ADD', {
       description: 'Transaction 1',
       amount: 10000,
       date: '2019-09-27'
     })
 
-    const store2 = build()
+    const { getStore } = build()
 
-    expect(store2.current.transactions).toEqual([
+    expect(getStore().transactions).toEqual([
       {
         id: 1,
         description: 'Transaction 1',

@@ -1,46 +1,27 @@
 import React from 'react'
-import { Formik } from 'formik'
-import { render, fireEvent, act } from '@testing-library/react'
+import { renderWithFormik, immediate, fireEvent, act } from '../../test-utils'
 import Select from './index'
 
 function build(props) {
-  let _values
-
-  const utils = render(
-    <Formik
-      initialValues={{ some_field: 'opt_1' }}
-      render={({ values }) => {
-        _values = values
-        return (
-          <form>
-            <Select name="some_field" label="Some Field" {...props}>
-              <option value="opt_1">Option 1</option>
-              <option value="opt_2">Option 2</option>
-            </Select>
-          </form>
-        )
-      }}
-    />
+  return renderWithFormik(
+    <Select name="some_field" label="Some Field" {...props}>
+      <option value="opt_1">Option 1</option>
+      <option value="opt_2">Option 2</option>
+    </Select>,
+    { some_field: 'opt_1' }
   )
-
-  return {
-    ...utils,
-    getFormikValues() {
-      return _values
-    }
-  }
 }
 
 describe('Field', () => {
   it('renders the label with the right props', () => {
-    const { container } = build()
-    const label = container.querySelector('label')
+    const { querySelector } = build()
+    const label = querySelector('label')
     expect(label.textContent).toBe('Some Field')
   })
 
   it('is connected to formik', () => {
-    const { container, getFormikValues } = build()
-    const select = container.querySelector('select')
+    const { querySelector, getFormikValues } = build()
+    const select = querySelector('select')
 
     expect(select.value).toBe('opt_1')
 
@@ -50,28 +31,23 @@ describe('Field', () => {
     expect(getFormikValues().some_field).toBe('opt_2')
   })
 
-  it('renders the validation error when needed', done => {
-    const { container } = build({
+  it('renders the validation error when needed', async () => {
+    const { querySelector } = build({
       validate: value => (value === 'opt_2' ? 'error message' : undefined)
     })
 
-    const select = container.querySelector('select')
+    const select = querySelector('select')
 
-    expect(container.querySelector('.MuiFormHelperText-root')).toBeNull()
+    expect(querySelector('.MuiFormHelperText-root')).toBeNull()
     expect(select.value).toBe('opt_1')
 
-    act(() => {
-      fireEvent.change(select, { target: { value: 'opt_2' } })
-    })
+    await act(
+      () => fireEvent.change(select, { target: { value: 'opt_2' } }),
+      () => fireEvent.blur(select),
+      () => immediate()
+    )
 
-    act(() => {
-      fireEvent.blur(select)
-    })
-
-    setImmediate(() => {
-      expect(container.querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
-      expect(select.value).toBe('opt_2')
-      done()
-    })
+    expect(querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
+    expect(select.value).toBe('opt_2')
   })
 })
