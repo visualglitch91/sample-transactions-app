@@ -6,11 +6,11 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button'
+import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch } from '../../store'
 import TextInput from '../text-input'
 import MoneyInput from '../money-input'
 import Select from '../select'
-import styles from './index.module.css'
 
 const initialValues = {
   description: '',
@@ -18,6 +18,14 @@ const initialValues = {
   date: '2019-09-27',
   type: 'debit'
 }
+
+const useStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1
+  }
+})
 
 function required(message) {
   return function(value) {
@@ -36,6 +44,7 @@ function greaterThan(min, message) {
 }
 
 function AddTransactionDialog({ onClose }) {
+  const classes = useStyles()
   const dispatch = useDispatch()
   const fullScreen = useMediaQuery('@media(max-width: 728px)')
 
@@ -54,7 +63,7 @@ function AddTransactionDialog({ onClose }) {
       fullWidth
     >
       <Formik onSubmit={onSubmit} initialValues={initialValues}>
-        <Form className={styles.form}>
+        <Form className={classes.form}>
           <DialogTitle id="add-transaction-dialog__dialog-title">Adicionar transação</DialogTitle>
           <DialogContent dividers>
             <TextInput
