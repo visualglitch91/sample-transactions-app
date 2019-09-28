@@ -1,54 +1,28 @@
 import React from 'react'
-import { Formik } from 'formik'
-import { render, fireEvent, act } from '@testing-library/react'
-import { StoreProvider } from '../../store'
+import { renderWithFormik, act, immediate, fireEvent } from '../../test-utils'
 import MoneyInput from './index'
 
 function build(props) {
-  let _values
-
-  const utils = render(
-    <StoreProvider>
-      <Formik
-        initialValues={{ some_field: 0 }}
-        render={({ values }) => {
-          _values = values
-          return (
-            <form>
-              <MoneyInput name="some_field" label="Some Field" type="text" {...props} />
-            </form>
-          )
-        }}
-      />
-    </StoreProvider>
+  return renderWithFormik(
+    <MoneyInput name="some_field" label="Some Field" type="text" {...props} />,
+    { some_field: 0 }
   )
-
-  return {
-    ...utils,
-    getFormikValues() {
-      return _values
-    }
-  }
 }
 
 describe('Field', () => {
-  beforeAll(() => {
-    window.localStorage.setItem('store', JSON.stringify({ currency: 'BRL' }))
-  })
-
-  afterAll(() => {
+  afterEach(() => {
     window.localStorage.removeItem('store')
   })
 
   it('renders the label with the right props', () => {
-    const { container } = build()
-    const label = container.querySelector('label')
+    const { querySelector } = build()
+    const label = querySelector('label')
     expect(label.textContent).toBe('Some Field')
   })
 
   it('is connected to formik', () => {
-    const { container, getFormikValues } = build()
-    const input = container.querySelector('input')
+    const { querySelector, getFormikValues } = build()
+    const input = querySelector('input')
 
     expect(input.value).toBe('R$ 0,00')
 
@@ -58,28 +32,23 @@ describe('Field', () => {
     expect(getFormikValues().some_field).toBe(1000)
   })
 
-  it('renders the validation error when needed', done => {
-    const { container } = build({
+  it('renders the validation error when needed', async () => {
+    const { querySelector } = build({
       validate: value => (value < 2000 ? 'error message' : undefined)
     })
 
-    const input = container.querySelector('input')
+    const input = querySelector('input')
 
-    expect(container.querySelector('.MuiFormHelperText-root')).toBeNull()
+    expect(querySelector('.MuiFormHelperText-root')).toBeNull()
     expect(input.value).toBe('R$ 0,00')
 
-    act(() => {
-      fireEvent.change(input, { target: { value: 'R$ 10,00' } })
-    })
+    await act(
+      () => fireEvent.change(input, { target: { value: 'R$ 10,00' } }),
+      () => fireEvent.blur(input),
+      () => immediate()
+    )
 
-    act(() => {
-      fireEvent.blur(input)
-    })
-
-    setImmediate(() => {
-      expect(container.querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
-      expect(input.value).toBe('R$ 10,00')
-      done()
-    })
+    expect(querySelector('.MuiFormHelperText-root').textContent).toBe('error message')
+    expect(input.value).toBe('R$ 10,00')
   })
 })

@@ -1,11 +1,6 @@
 import React from 'react'
-import { render, act, fireEvent } from '@testing-library/react'
-import { StoreProvider } from '../../store'
+import { renderWithStore, act, immediate, fireEvent } from '../../test-utils'
 import ChangeCurrencyDialog from './index'
-
-function immediate() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 jest.mock('@material-ui/core/Dialog', () => ({ children }) => children)
 
@@ -16,13 +11,8 @@ describe('ChangeCurrencyDialog', () => {
 
   it('can be closed', () => {
     const onClose = jest.fn()
-    const { container } = render(
-      <StoreProvider>
-        <ChangeCurrencyDialog onClose={onClose} />
-      </StoreProvider>
-    )
-
-    const button = container.querySelector('#change-currency-dialog__close')
+    const { findById } = renderWithStore(<ChangeCurrencyDialog onClose={onClose} />)
+    const button = findById('change-currency-dialog__close')
 
     fireEvent.click(button)
 
@@ -30,35 +20,23 @@ describe('ChangeCurrencyDialog', () => {
   })
 
   it('can change the currency', async () => {
-    let _store
-
     const onClose = jest.fn()
-    const { container } = render(
-      <StoreProvider
-        onChange={store => {
-          _store = store
-        }}
-      >
-        <ChangeCurrencyDialog onClose={onClose} />
-      </StoreProvider>
+    const { getStore, findByName, querySelector } = renderWithStore(
+      <ChangeCurrencyDialog onClose={onClose} />
     )
 
-    const select = container.querySelector('[name="currency"]')
+    const select = findByName('currency')
 
-    expect(_store.currency).toBe('BRL')
+    expect(getStore().currency).toBe('BRL')
     expect(select.value).toBe('BRL')
 
-    act(() => {
-      fireEvent.change(select, { target: { value: 'EUR' } })
-    })
-
-    act(() => {
-      fireEvent.click(container.querySelector('button[type="submit"]'))
-    })
-
-    await act(immediate)
+    await act(
+      () => fireEvent.change(select, { target: { value: 'EUR' } }),
+      () => fireEvent.click(querySelector('button[type="submit"]')),
+      () => immediate()
+    )
 
     expect(onClose).toHaveBeenCalledTimes(1)
-    expect(_store.currency).toBe('EUR')
+    expect(getStore().currency).toBe('EUR')
   })
 })
