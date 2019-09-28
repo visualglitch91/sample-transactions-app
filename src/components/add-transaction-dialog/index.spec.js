@@ -1,11 +1,6 @@
 import React from 'react'
-import { render, act, fireEvent } from '@testing-library/react'
-import { StoreProvider } from '../../store'
+import { renderWithStore, act, fireEvent, immediate } from '../../test-utils'
 import AddTransactionDialog from './index'
-
-function immediate() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 jest.mock('@material-ui/core/Dialog', () => ({ children }) => children)
 
@@ -15,103 +10,62 @@ describe('AddTransactionDialog', () => {
   })
 
   it('validates the description field', async () => {
-    const { container } = render(
-      <StoreProvider>
-        <AddTransactionDialog />
-      </StoreProvider>
-    )
-
-    const input = container.querySelector('[name="description"]')
+    const { findByName } = renderWithStore(<AddTransactionDialog />)
+    const input = findByName('description')
     const inputWrapper = input.parentNode.parentNode
 
-    act(() => {
-      fireEvent.blur(input)
-    })
-
-    await immediate()
+    await act(() => fireEvent.blur(input), () => immediate())
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).not.toBeNull()
 
-    act(() => {
-      fireEvent.change(input, { target: { value: 'some description' } })
-    })
-
-    await immediate()
+    await act(
+      () => fireEvent.change(input, { target: { value: 'some description' } }),
+      () => immediate()
+    )
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).toBeNull()
   })
 
   it('validates the amount field', async () => {
-    const { container } = render(
-      <StoreProvider>
-        <AddTransactionDialog />
-      </StoreProvider>
-    )
-
-    const input = container.querySelector('[name="amount"]')
+    const { findByName } = renderWithStore(<AddTransactionDialog />)
+    const input = findByName('amount')
     const inputWrapper = input.parentNode.parentNode
 
-    act(() => {
-      fireEvent.change(input, { target: { value: '0.00' } })
-    })
-
-    act(() => {
-      fireEvent.blur(input)
-    })
-
-    await immediate()
+    await act(
+      () => fireEvent.change(input, { target: { value: '0.00' } }),
+      () => fireEvent.blur(input),
+      () => immediate()
+    )
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).not.toBeNull()
 
-    act(() => {
-      fireEvent.change(input, { target: { value: '10.00' } })
-    })
-
-    await immediate()
+    await act(() => fireEvent.change(input, { target: { value: '10.00' } }), () => immediate())
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).toBeNull()
   })
 
   it('validates the date field', async () => {
-    const { container } = render(
-      <StoreProvider>
-        <AddTransactionDialog />
-      </StoreProvider>
-    )
-
-    const input = container.querySelector('[name="date"]')
+    const { findByName } = renderWithStore(<AddTransactionDialog />)
+    const input = findByName('date')
     const inputWrapper = input.parentNode.parentNode
 
-    act(() => {
-      fireEvent.change(input, { target: { value: '' } })
-    })
-
-    act(() => {
-      fireEvent.blur(input)
-    })
-
-    await immediate()
+    await act(
+      () => fireEvent.change(input, { target: { value: '' } }),
+      () => fireEvent.blur(input),
+      () => immediate()
+    )
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).not.toBeNull()
 
-    act(() => {
-      fireEvent.change(input, { target: { value: '1991-09-21' } })
-    })
-
-    await immediate()
+    await act(() => fireEvent.change(input, { target: { value: '1991-09-21' } }), () => immediate())
 
     expect(inputWrapper.querySelector('.MuiFormHelperText-root')).toBeNull()
   })
 
   it('can be closed', () => {
     const onClose = jest.fn()
-    const { container } = render(
-      <StoreProvider>
-        <AddTransactionDialog onClose={onClose} />
-      </StoreProvider>
-    )
-
-    const button = container.querySelector('#add-transaction-dialog__close')
+    const { querySelector } = renderWithStore(<AddTransactionDialog onClose={onClose} />)
+    const button = querySelector('#add-transaction-dialog__close')
 
     fireEvent.click(button)
 
@@ -119,76 +73,56 @@ describe('AddTransactionDialog', () => {
   })
 
   it('can add a debit transaction', async () => {
-    let _store
-
     const onClose = jest.fn()
-    const { container } = render(
-      <StoreProvider
-        onChange={store => {
-          _store = store
-        }}
-      >
-        <AddTransactionDialog onClose={onClose} />
-      </StoreProvider>
+    const { querySelector, findByName, getStore } = renderWithStore(
+      <AddTransactionDialog onClose={onClose} />
     )
 
-    act(() => {
-      fireEvent.change(container.querySelector('[name="description"]'), {
-        target: { value: 'some description' }
-      })
-      fireEvent.change(container.querySelector('[name="amount"]'), { target: { value: '100.00' } })
-      fireEvent.change(container.querySelector('[name="date"]'), {
-        target: { value: '2019-09-21' }
-      })
-      fireEvent.change(container.querySelector('[name="type"]'), { target: { value: 'debit' } })
-    })
-
-    act(() => {
-      fireEvent.click(container.querySelector('button[type="submit"]'))
-    })
-
-    await act(immediate)
+    await act(
+      () => fireEvent.change(findByName('description'), { target: { value: 'some description' } }),
+      () => fireEvent.change(findByName('amount'), { target: { value: '100.00' } }),
+      () => fireEvent.change(findByName('date'), { target: { value: '2019-09-21' } }),
+      () => fireEvent.change(findByName('type'), { target: { value: 'debit' } }),
+      () => fireEvent.click(querySelector('button[type="submit"]')),
+      () => immediate()
+    )
 
     expect(onClose).toHaveBeenCalledTimes(1)
-    expect(_store.transactions).toEqual([
-      { id: 1, description: 'some description', amount: 10000, date: '2019-09-21', type: 'debit' }
+    expect(getStore().transactions).toEqual([
+      {
+        id: 1,
+        description: 'some description',
+        amount: 10000,
+        date: '2019-09-21',
+        type: 'debit'
+      }
     ])
   })
 
   it('can add a credit transaction', async () => {
-    let _store
-
     const onClose = jest.fn()
-    const { container } = render(
-      <StoreProvider
-        onChange={store => {
-          _store = store
-        }}
-      >
-        <AddTransactionDialog onClose={onClose} />
-      </StoreProvider>
+    const { querySelector, findByName, getStore } = renderWithStore(
+      <AddTransactionDialog onClose={onClose} />
     )
 
-    act(() => {
-      fireEvent.change(container.querySelector('[name="description"]'), {
-        target: { value: 'some description' }
-      })
-      fireEvent.change(container.querySelector('[name="amount"]'), { target: { value: '100.00' } })
-      fireEvent.change(container.querySelector('[name="date"]'), {
-        target: { value: '2019-09-21' }
-      })
-      fireEvent.change(container.querySelector('[name="type"]'), { target: { value: 'credit' } })
-    })
-
-    act(() => {
-      fireEvent.click(container.querySelector('button[type="submit"]'))
-    })
-
-    await act(immediate)
+    await act(
+      () => fireEvent.change(findByName('description'), { target: { value: 'some description' } }),
+      () => fireEvent.change(findByName('amount'), { target: { value: '100.00' } }),
+      () => fireEvent.change(findByName('date'), { target: { value: '2019-09-21' } }),
+      () => fireEvent.change(findByName('type'), { target: { value: 'credit' } }),
+      () => fireEvent.click(querySelector('button[type="submit"]')),
+      () => immediate()
+    )
 
     expect(onClose).toHaveBeenCalledTimes(1)
-    expect(_store.transactions).toEqual([
-      { id: 1, description: 'some description', amount: 10000, date: '2019-09-21', type: 'credit' }
+    expect(getStore().transactions).toEqual([
+      {
+        id: 1,
+        description: 'some description',
+        amount: 10000,
+        date: '2019-09-21',
+        type: 'credit'
+      }
     ])
   })
 })

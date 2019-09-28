@@ -1,6 +1,5 @@
 import React from 'react'
-import { render, act, fireEvent } from '@testing-library/react'
-import { StoreProvider } from '../../store'
+import { renderWithStore, act, fireEvent } from '../../test-utils'
 import TransactionList from './index'
 
 describe('TextInput', () => {
@@ -9,43 +8,34 @@ describe('TextInput', () => {
   })
 
   it('renders the transactions sorted by date and grouped by day', () => {
-    window.localStorage.setItem(
-      'store',
-      JSON.stringify({
-        currency: 'BRL',
-        transactions: [
-          {
-            id: 1,
-            description: 'Prime Dog',
-            amount: 3000,
-            type: 'debit',
-            date: '2019-09-21'
-          },
-          {
-            id: 2,
-            description: 'Boteco do Góis',
-            amount: 3000,
-            type: 'debit',
-            date: '2019-09-22'
-          },
-          {
-            id: 3,
-            description: 'Salary',
-            amount: 500000,
-            type: 'credit',
-            date: '2019-09-21'
-          }
-        ]
-      })
-    )
+    const { querySelectorAll } = renderWithStore(<TransactionList />, {
+      currency: 'BRL',
+      transactions: [
+        {
+          id: 1,
+          description: 'Prime Dog',
+          amount: 3000,
+          type: 'debit',
+          date: '2019-09-21'
+        },
+        {
+          id: 2,
+          description: 'Boteco do Góis',
+          amount: 3000,
+          type: 'debit',
+          date: '2019-09-22'
+        },
+        {
+          id: 3,
+          description: 'Salary',
+          amount: 500000,
+          type: 'credit',
+          date: '2019-09-21'
+        }
+      ]
+    })
 
-    const { container } = render(
-      <StoreProvider>
-        <TransactionList />
-      </StoreProvider>
-    )
-
-    const dayGroups = container.querySelectorAll('#transaction-list__list > li')
+    const dayGroups = querySelectorAll('#transaction-list__list > li')
 
     const getSubheader = index =>
       dayGroups[index].querySelector('.MuiListSubheader-root').textContent
@@ -61,34 +51,23 @@ describe('TextInput', () => {
   })
 
   it('can remove a transaction', () => {
-    window.localStorage.setItem(
-      'store',
-      JSON.stringify({
-        currency: 'BRL',
-        transactions: [
-          {
-            id: 1,
-            description: 'Prime Dog',
-            amount: 3000,
-            type: 'debit',
-            date: '2019-09-21'
-          }
-        ]
-      })
-    )
-
-    const { container } = render(
-      <StoreProvider>
-        <TransactionList />
-      </StoreProvider>
-    )
-
-    expect(container.querySelector('#transaction__1')).not.toBeNull()
-
-    act(() => {
-      fireEvent.click(container.querySelector('#transaction__1__remove'))
+    const { findById } = renderWithStore(<TransactionList />, {
+      currency: 'BRL',
+      transactions: [
+        {
+          id: 1,
+          description: 'Prime Dog',
+          amount: 3000,
+          type: 'debit',
+          date: '2019-09-21'
+        }
+      ]
     })
 
-    expect(container.querySelector('#transaction__1')).toBeNull()
+    expect(findById('transaction__1')).not.toBeNull()
+
+    act(() => fireEvent.click(findById('transaction__1__remove')))
+
+    expect(findById('transaction__1')).toBeNull()
   })
 })
