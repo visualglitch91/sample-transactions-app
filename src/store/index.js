@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useReducer, useContext, useCallback } from 'react'
 import { reducer, initialState } from './reducer'
+import validate from './validate'
 
 const storeContext = createContext()
 const dispatchContext = createContext()
@@ -9,6 +10,7 @@ function getInitialState() {
     const state = JSON.parse(window.localStorage.getItem('store'))
 
     if (state) {
+      validate(state)
       return state
     }
   } catch (err) {}

@@ -6,9 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button'
 import { useDispatch, useStore } from '../../store'
+import currencies from '../../currencies'
 import Select from '../select'
-
-const currencies = ['BRL', 'USD', 'EUR', 'SEK', 'GBP']
 
 function ChangeCurrencyDialog({ onClose }) {
   const { currency: currentCurrency } = useStore()
