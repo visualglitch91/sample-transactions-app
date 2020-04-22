@@ -1,8 +1,4 @@
-# Sweet Kangaroo 79
-
-https://sweet-kangaroo-79.netlify.com
-
-![](https://live.staticflickr.com/2487/3851217724_9f9cd91924_z.jpg)
+# Sample Transactions App
 
 A simple web app to manage financial transactions
 
@@ -50,6 +46,3 @@ The code handles amounts as integers with two implied decimals, that makes it ea
 
 I like to follow the approach described in this article https://kentcdodds.com/blog/write-tests, focusing on the final output of components as well as their behavior when we simulate events that the real user would trigger and trying to avoid mocking behaviors and testing implementation details.
 
-## Deployment
-
-This repository is automatically deployed to Netlify, every new commit to the master branch will trigger the tests, build the app and upload it to netlify's CDN. You can check the app running here https://sweet-kangaroo-79.netlify.com
